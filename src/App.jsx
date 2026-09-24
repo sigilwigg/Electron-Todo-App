@@ -1,17 +1,31 @@
-function App() {
+import React from 'react'
+import TodoList from './components/TodoList'
+
+export default function App() {
+  // Format the current date nicely (e.g., "Thursday, September 24, 2026")
+  const currentDate = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  })
+
   return (
-    <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-      <div className="card w-96 bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title">Hello Electron!</h2>
-          <p>Your React, Vite, and DaisyUI environment is set up successfully.</p>
-          <div className="card-actions justify-end mt-4">
-            <button className="btn btn-primary">DaisyUI Button</button>
-          </div>
+    <div className="p-8">
+      <div className="">
+        
+        {/* Header Section */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold tracking-tight text-base-content font-title">Todo</h1>
+          <p className="text-sm text-base-content/60 mt-1">{currentDate}</p>
         </div>
+
+        <div className="divider"></div>
+
+        {/* Placeholder Box for the List */}
+        <TodoList />
+
       </div>
     </div>
   )
 }
-
-export default App
