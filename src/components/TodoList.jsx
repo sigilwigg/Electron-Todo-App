@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import TodoListItem from './TodoListItem'
 
 export default function TodoList() {
-  // Sample initial todo items
   const [todos, setTodos] = useState([
-    { id: 1, text: 'item 1', completed: true },
-    { id: 2, text: 'item 2', completed: true },
-    { id: 3, text: 'item 3', completed: false },
+    { id: 1, text: 'item 1', completed: true, date: '2026-09-20' },
+    { id: 2, text: 'item 2', completed: true, date: '2026-09-24' },
+    { id: 3, text: 'item 3', completed: false, date: '2026-09-24' },
+    { id: 4, text: 'item 4', completed: false, date: '2026-09-25' },
   ])
 
   const toggleTodo = (id) => {
@@ -15,12 +15,16 @@ export default function TodoList() {
     ))
   }
 
+  // Get today's date in YYYY-MM-DD format for comparison
+  const todayStr = new Date().toISOString().split('T')[0]
+
+  // Filter out todos with dates later than today
+  const visibleTodos = todos.filter(todo => todo.date == todayStr)
+
   return (
     <ul className="list bg-base-100 rounded-box shadow-md">
-  
-        <div className="p-4 pb-2 text-xs opacity-60 tracking-wide">Most played songs this week</div>
         
-        {todos.map(todo => (
+        {visibleTodos.map(todo => (
         <TodoListItem 
             key={todo.id} 
             task={todo.text} 
