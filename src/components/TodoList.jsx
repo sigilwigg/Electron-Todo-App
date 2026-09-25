@@ -1,67 +1,23 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import TodoListItem from './TodoListItem'
+import FormAddTodoItem from './FormAddTodoItem'
+import { useTodos } from '../hooks/useTodos'
 
 export default function TodoList({ selectedDate }) {
-  const [todos, setTodos] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { todos, loading, addTodo, toggleTodo, todayStr } = useTodos()
   const [isAdding, setIsAdding] = useState(false)
-  const [newText, setNewText] = useState('')
-  
-  // Get today's date in YYYY-MM-DD format for comparison
-  const todayStr = new Date().toISOString().split('T')[0]
+
   const isPastDay = selectedDate < todayStr
+  const visibleTodos = todos.filter(todo => todo.date === selectedDate)
 
-  useEffect(() => {
-    // Fetch todos from the SQLite database via the Electron IPC bridge
-    window.api.getTodos()
-      .then((data) => {
-        setTodos(
-          // Automatically roll over uncompleted past tasks to today's date on load
-          data.map(todo => {
-            if (!todo.completed && todo.date < todayStr) {
-              return { ...todo, date: todayStr }
-            }
-            return todo
-          })
-        )
-        setLoading(false)
-      })
-      .catch((err) => {
-        console.error('Error loading todos:', err)
-        setLoading(false)
-      })
-  }, [todayStr])
-
-  const toggleTodo = (id) => {
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ))
+  const handleAdd = async (text) => {
+    await addTodo(text, selectedDate)
+    setIsAdding(false)
   }
-
-  const handleAddSubmit = async (e) => {
-    e.preventDefault()
-    if (!newText.trim()) return
-
-    try {
-      console.log("adding todo");
-      const newTodo = await window.api.addTodo({
-        text: newText.trim(),
-        date: selectedDate
-      })
-      setTodos([...todos, newTodo])
-      setNewText('')
-      setIsAdding(false)
-    } catch (err) {
-      console.error('Error adding todo:', err)
-    }
-  }
-
-  // Filter out todos with dates later than today
-  const visibleTodos = todos.filter(todo => todo.date == selectedDate)
 
   return (
     <div className="space-y-4">
-      {/* Header and Add Button */}
+      {/* Header & Add Button */}
       <div className="flex justify-between items-center px-1">
         <h3 className="text-sm font-medium text-base-content/75">Tasks for {selectedDate}</h3>
         {!isAdding && !isPastDay && (
@@ -75,28 +31,15 @@ export default function TodoList({ selectedDate }) {
         )}
       </div>
 
-      {/* Inline New Item Form */}
+      {/* Conditional Add Form */}
       {isAdding && (
-        <form onSubmit={handleAddSubmit} className="flex gap-2 bg-base-100 p-3 rounded-box shadow-md">
-          <input 
-            type="text" 
-            placeholder="Enter task description..." 
-            value={newText}
-            onChange={(e) => setNewText(e.target.value)}
-            autoFocus
-            className="input input-bordered input-sm w-full"
-          />
-          <button type="submit" className="btn btn-primary btn-sm">Add</button>
-          <button 
-            type="button" 
-            onClick={() => { setIsAdding(false); setNewText(''); }} 
-            className="btn btn-ghost btn-sm"
-          >
-            Cancel
-          </button>
-        </form>
+        <FormAddTodoItem 
+          onAdd={handleAdd} 
+          onCancel={() => setIsAdding(false)} 
+        />
       )}
 
+      {/* Loading or Task List */}
       {loading ? (
         <div className="flex justify-center my-4">
           <span className="loading loading-spinner loading-md"></span>
