@@ -2,13 +2,6 @@ import React, { useState, useEffect } from 'react'
 import TodoListItem from './TodoListItem'
 
 export default function TodoList({ selectedDate }) {
-  // const [todos, setTodos] = useState([
-  //     { id: 1, text: 'item 1', completed: false, date: '2026-09-20' },
-  //     { id: 2, text: 'item 2', completed: true, date: '2026-09-20' },
-  //     { id: 3, text: 'item 3', completed: false, date: '2026-09-24' },
-  //     { id: 4, text: 'item 4', completed: false, date: '2026-09-25' },
-  // ])
-
   const [todos, setTodos] = useState([])
   const [loading, setLoading] = useState(true)
   
