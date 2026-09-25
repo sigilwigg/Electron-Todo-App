@@ -52,6 +52,18 @@ ipcMain.handle('add-todo', (event, { text, date }) => {
   }
 })
 
+// IPC listener to delete a todo from SQLite by id
+ipcMain.handle('delete-todo', (event, id) => {
+  try {
+    const stmt = db.prepare('delete from todos where id = ?')
+    stmt.run(id)
+    return true
+  } catch (error) {
+    console.error('Failed to delete todo:', error)
+    throw error
+  }
+})
+
 app.whenReady().then(() => {
   createWindow()
 

@@ -42,5 +42,14 @@ export function useTodos() {
     )
   }
 
-  return { todos, loading, addTodo, toggleTodo, todayStr }
+  const deleteTodo = async (id) => {
+    try {
+      await window.api.deleteTodo(id)
+      setTodos((prev) => prev.filter(todo => todo.id !== id))
+    } catch (err) {
+      console.error('Error deleting todo:', err)
+    }
+  }
+
+  return { todos, loading, addTodo, toggleTodo, deleteTodo, todayStr }
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-export default function FormAddTodoItem({ onAdd, onCancel }) {
+export default function TodoAddForm({ onAdd, onCancel }) {
   const [text, setText] = useState('')
 
   const handleSubmit = (e) => {

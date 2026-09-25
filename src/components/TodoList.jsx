@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import TodoListItem from './TodoListItem'
-import FormAddTodoItem from './FormAddTodoItem'
+import TodoAddForm from './TodoAddForm'
 import { useTodos } from '../hooks/useTodos'
 
 export default function TodoList({ selectedDate }) {
-  const { todos, loading, addTodo, toggleTodo, todayStr } = useTodos()
+  const { todos, loading, addTodo, toggleTodo, deleteTodo, todayStr } = useTodos()
   const [isAdding, setIsAdding] = useState(false)
 
   const isPastDay = selectedDate < todayStr
@@ -17,7 +17,6 @@ export default function TodoList({ selectedDate }) {
 
   return (
     <div className="space-y-4">
-      {/* Header & Add Button */}
       <div className="flex justify-between items-center px-1">
         <h3 className="text-sm font-medium text-base-content/75">Tasks for {selectedDate}</h3>
         {!isAdding && !isPastDay && (
@@ -31,21 +30,19 @@ export default function TodoList({ selectedDate }) {
         )}
       </div>
 
-      {/* Conditional Add Form */}
       {isAdding && (
-        <FormAddTodoItem 
+        <TodoAddForm 
           onAdd={handleAdd} 
           onCancel={() => setIsAdding(false)} 
         />
       )}
 
-      {/* Loading or Task List */}
       {loading ? (
         <div className="flex justify-center my-4">
           <span className="loading loading-spinner loading-md"></span>
         </div>
       ) : (
-        <ul className="list bg-base-100 rounded-box shadow-md">
+        <ul className="list bg-base-100 rounded-box shadow-md space-y-1">
           {visibleTodos.length === 0 ? (
             <p className="text-center text-base-content/40 italic py-8">No tasks scheduled for this day.</p>
           ) : (
@@ -56,6 +53,7 @@ export default function TodoList({ selectedDate }) {
                 completed={todo.completed}
                 isDisabled={isPastDay}
                 onToggle={() => toggleTodo(todo.id)} 
+                onDelete={() => deleteTodo(todo.id)}
               />
             ))
           )}
