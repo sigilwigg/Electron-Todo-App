@@ -34,12 +34,25 @@ export function useTodos() {
     }
   }
 
-  const toggleTodo = (id) => {
-    setTodos((prev) =>
-      prev.map(todo => 
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+  const toggleTodo = async (id) => {
+    const todoToToggle = todos.find(t => t.id === id)
+    if (!todoToToggle) return
+
+    const newCompleted = !todoToToggle.completed
+
+    try {
+      // Update database via IPC
+      await window.api.updateTodo({ id, completed: newCompleted ? 1 : 0 })
+      
+      // Update local state
+      setTodos((prev) =>
+        prev.map(todo => 
+          todo.id === id ? { ...todo, completed: newCompleted ? 1 : 0 } : todo
+        )
       )
-    )
+    } catch (err) {
+      console.error('Error updating todo status:', err)
+    }
   }
 
   const deleteTodo = async (id) => {

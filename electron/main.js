@@ -64,6 +64,17 @@ ipcMain.handle('delete-todo', (event, id) => {
   }
 })
 
+ipcMain.handle('update-todo', (event, { id, completed }) => {
+  try {
+    const stmt = db.prepare('update todos set completed = ? where id = ?')
+    stmt.run(completed ? 1 : 0, id)
+    return true
+  } catch (error) {
+    console.error('Failed to update todo:', error)
+    throw error
+  }
+})
+
 app.whenReady().then(() => {
   createWindow()
 
