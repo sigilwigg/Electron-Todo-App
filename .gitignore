@@ -1,4 +1,3 @@
 node_modules
-*.db
-*.db
-todo_dev.db
+# *.db
+# todo_dev.db
