@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/sigilwigg/Electron-Todo-App#readme",
   "dependencies": {
+    "better-sqlite3": "^13.0.3",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "wait-on": "^9.1.0"

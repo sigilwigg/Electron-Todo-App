@@ -11,4 +11,10 @@ export default defineConfig({
   server: {
     port: 5173,
   },
+  build: {
+    rollupOptions: {
+      // Exclude native Node modules from being bundled into the browser/renderer build
+      external: ['better-sqlite3'],
+    },
+  },
 })
