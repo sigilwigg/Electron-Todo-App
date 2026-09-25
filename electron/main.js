@@ -1,9 +1,11 @@
-const { app, BrowserWindow, Menu, ipcMain } = require('electron')
+const { app, BrowserWindow, Menu } = require('electron')
 const path = require('path')
 const { initDatabase } = require('./database')
+const { registerTodoHandlers } = require('./ipcHandlers/todos');
 
-// Initialize database based on environment
+// Initialize database and register IPC handlers
 const db = initDatabase()
+registerTodoHandlers(db)
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
@@ -28,52 +30,6 @@ const createWindow = () => {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
   }
 }
-
-// IPC listener to fetch todos from SQLite
-ipcMain.handle('get-todos', () => {
-  try {
-    const stmt = db.prepare('select * from todos')
-    return stmt.all()
-  } catch (error) {
-    console.error('Failed to fetch todos:', error)
-    return []
-  }
-})
-
-// IPC listener to set new todos in SQLite
-ipcMain.handle('add-todo', (event, { text, date }) => {
-  try {
-    const stmt = db.prepare('insert into todos (text, completed, date) values (?, 0, ?)')
-    const info = stmt.run(text, date)
-    return { id: info.lastInsertRowid, text, completed: 0, date }
-  } catch (error) {
-    console.error('Failed to add todo:', error)
-    throw error
-  }
-})
-
-// IPC listener to delete a todo from SQLite by id
-ipcMain.handle('delete-todo', (event, id) => {
-  try {
-    const stmt = db.prepare('delete from todos where id = ?')
-    stmt.run(id)
-    return true
-  } catch (error) {
-    console.error('Failed to delete todo:', error)
-    throw error
-  }
-})
-
-ipcMain.handle('update-todo', (event, { id, completed }) => {
-  try {
-    const stmt = db.prepare('update todos set completed = ? where id = ?')
-    stmt.run(completed ? 1 : 0, id)
-    return true
-  } catch (error) {
-    console.error('Failed to update todo:', error)
-    throw error
-  }
-})
 
 app.whenReady().then(() => {
   createWindow()
