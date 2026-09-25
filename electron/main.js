@@ -40,6 +40,18 @@ ipcMain.handle('get-todos', () => {
   }
 })
 
+// IPC listener to set new todos in SQLite
+ipcMain.handle('add-todo', (event, { text, date }) => {
+  try {
+    const stmt = db.prepare('insert into todos (text, completed, date) values (?, 0, ?)')
+    const info = stmt.run(text, date)
+    return { id: info.lastInsertRowid, text, completed: 0, date }
+  } catch (error) {
+    console.error('Failed to add todo:', error)
+    throw error
+  }
+})
+
 app.whenReady().then(() => {
   createWindow()
 
